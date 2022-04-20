@@ -1,0 +1,57 @@
+public void FindVolumes()
+        {
+            VOLUMES = GameObject.Find("sunlight").GetComponentInParent<Volume>(); 
+            sun = new SUN();
+            addl = new ADDL(); 
+            indl = new INDL();
+            env = new ENV();
+            amb = new AMB();
+            exp = new EXP();
+            fog = new FOG();
+            sky = new SKY();
+            sky.sky = (HDRISky)VOLUMES.profile.components[0];
+            env.env = (VisualEnvironment)VOLUMES.profile.components[1];
+            fog.fog = (Fog)VOLUMES.profile.components[2];
+            exp.exp = (Exposure)VOLUMES.profile.components[3];
+            addl.ADD_LIGHT = GameObject.Find("sunlight").GetComponent<HDAdditionalLightData>();
+            sun.DNC = GameObject.Find("lighting_controller").GetComponent<DayNightController>();
+            sun.C_LIGHT = GameObject.Find("sunlight").GetComponent<Light>();
+            sun.SUN_GO = GameObject.Find("sunlight");
+            Debug.Log("BEFORE ADDL");
+            addl.DO_ADDL();
+            Debug.Log("AFTER ADDL");
+            env.DO_ENV(); 
+            exp.DO_EXP(); 
+            fog.DO_FOG(); 
+            sky.DO_SKY(); 
+            sun.DO_LIGHT(); 
+            sun.DO_REFS();  
+            if (sun.NIGHT.Value == true)
+            {
+                Debug.Log("AFTER NIGHT CHECK VALUE!!!;");
+                sun.DNC.TryApplyMode(sun.LIGHT_NAME.Value + "_night", !sun.NIGHT.Value);
+            }
+            else if (sun.NIGHT.Value == false)
+            {
+                Debug.Log("AFTER NIGHT CHECK VALUE FOR DAYTIME!!!;");
+                sun.DNC.TryApplyMode(sun.LIGHT_NAME.Value, !sun.NIGHT.Value);
+            }
+            if (sun.SUN_GO.transform.parent.transform.gameObject.name.ToLowerInvariant().Contains("night"))
+            {
+                sky.sky = (HDRISky)VOLUMES.profile.components[0];
+                env.env = (VisualEnvironment)VOLUMES.profile.components[1];
+                fog.fog = (Fog)VOLUMES.profile.components[2];
+                amb.amb = (AmbientOcclusion)VOLUMES.profile.components[3];
+                indl.indl = (IndirectLightingController)VOLUMES.profile.components[4];
+                exp.exp = (Exposure)VOLUMES.profile.components[5];
+                addl.DO_ADDL();
+                amb.DO_AMB();
+                env.DO_ENV();
+                exp.DO_EXP();
+                fog.DO_FOG();
+                indl.DO_INDL();
+                sky.DO_SKY();
+                sun.DO_LIGHT();
+                sun.DO_REFS();
+            }  
+        }
